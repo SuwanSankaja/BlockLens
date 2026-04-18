@@ -86,6 +86,79 @@ a {
   border: 1px solid var(--border);
 }
 
+.search-panel {
+  position: relative;
+  border-color: rgba(251, 113, 133, 0.28);
+  background:
+    radial-gradient(circle at top left, rgba(251, 113, 133, 0.12), transparent 34%),
+    radial-gradient(circle at 82% 18%, rgba(244, 63, 94, 0.08), transparent 22%),
+    linear-gradient(180deg, rgba(18, 34, 58, 0.96), rgba(8, 18, 34, 0.92));
+  box-shadow:
+    0 0 0 1px rgba(251, 113, 133, 0.12),
+    0 22px 54px rgba(0, 0, 0, 0.42),
+    0 0 38px rgba(244, 63, 94, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.search-panel::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(135deg, rgba(251, 113, 133, 0.28), transparent 28%),
+    linear-gradient(315deg, rgba(251, 146, 60, 0.18), transparent 26%);
+  opacity: 0.9;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  padding: 1px;
+}
+
+.search-panel::after {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: 18px;
+  width: 120px;
+  height: 54px;
+  pointer-events: none;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(251, 113, 133, 0.24), transparent 68%);
+  filter: blur(18px);
+  opacity: 0.85;
+}
+
+.search-input {
+  border-color: rgba(251, 113, 133, 0.32);
+  background:
+    radial-gradient(circle at top left, rgba(251, 113, 133, 0.08), transparent 38%),
+    rgba(19, 28, 49, 0.98);
+  box-shadow:
+    0 0 0 1px rgba(251, 113, 133, 0.1),
+    0 0 24px rgba(244, 63, 94, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.search-input:hover {
+  border-color: rgba(251, 113, 133, 0.42);
+  box-shadow:
+    0 0 0 1px rgba(251, 113, 133, 0.14),
+    0 0 30px rgba(244, 63, 94, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.search-input:focus {
+  border-color: rgba(251, 113, 133, 0.7);
+  box-shadow:
+    0 0 0 1px rgba(251, 113, 133, 0.34),
+    0 0 0 4px rgba(251, 113, 133, 0.12),
+    0 0 36px rgba(244, 63, 94, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
 ::selection {
   background: rgba(94, 182, 255, 0.32);
   color: white;

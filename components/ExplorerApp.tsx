@@ -332,7 +332,7 @@ export default function ExplorerApp({ initialQuery }: { initialQuery: string }) 
         ) : (
           <section className="grid flex-1 gap-4 lg:grid-cols-[320px_minmax(0,1fr)_360px]">
             <div className="space-y-4">
-              <div className="panel rounded-[2rem] p-6">
+              <div className="search-panel panel relative overflow-hidden rounded-[2rem] p-6">
                 <SearchBar
                   query={query}
                   detection={detection}

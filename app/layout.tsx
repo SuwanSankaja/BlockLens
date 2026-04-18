@@ -5,7 +5,14 @@ import "@/app/globals.css";
 export const metadata: Metadata = {
   title: "BlockLens Explorer",
   description:
-    "Free Bitcoin transaction and address relationship explorer with graph expansion.",
+    "Bitcoin transaction and address relationship explorer with graph expansion.",
+  icons: {
+    icon: [
+      { url: "/logo.png", type: "image/png" },
+      { url: "/logo.png", rel: "shortcut icon", type: "image/png" },
+    ],
+    apple: [{ url: "/logo.png", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({
