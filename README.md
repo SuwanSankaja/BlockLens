@@ -1,270 +1,196 @@
-# BlockLens Explorer
+<p align="center">
+  <img src="public/logo.png" alt="BlockLens" width="100" height="100" style="border-radius: 20px;" />
+</p>
 
-BlockLens Explorer is a Bitcoin relationship explorer built with Next.js, TypeScript, Tailwind CSS, Route Handlers, and `vis-network`.
+<h1 align="center">BlockLens Explorer</h1>
 
-It accepts either:
+<p align="center">
+  <strong>A beautiful, interactive Bitcoin relationship explorer</strong>
+</p>
 
-- a Bitcoin transaction ID
-- a Bitcoin address
+<p align="center">
+  <a href="https://blocklens.suwansankaja.com"><img src="https://img.shields.io/badge/🌐_Live_Demo-blocklens.suwansankaja.com-38bdf8?style=for-the-badge" alt="Live Demo" /></a>
+</p>
 
-and returns:
+<p align="center">
+  <a href="#-features"><img src="https://img.shields.io/badge/Bitcoin-Mainnet-orange?style=flat-square&logo=bitcoin" alt="Bitcoin Mainnet" /></a>
+  <a href="#-stack"><img src="https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js" alt="Next.js 16" /></a>
+  <a href="#-stack"><img src="https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript" alt="TypeScript" /></a>
+  <a href="#-stack"><img src="https://img.shields.io/badge/Tailwind-4-38bdf8?style=flat-square&logo=tailwindcss" alt="Tailwind CSS" /></a>
+  <a href="#-deployment"><img src="https://img.shields.io/badge/Cloudflare-Workers-f38020?style=flat-square&logo=cloudflare" alt="Cloudflare Workers" /></a>
+</p>
 
-- a transaction or address summary
-- directly related transactions and addresses
-- an interactive graph of on-chain relationships
-- controlled hop-by-hop expansion with node and depth guardrails
+<p align="center">
+  Search Bitcoin transactions and addresses, inspect connected activity, and<br/>
+  expand blockchain relationships hop by hop — all from a stunning glassmorphic interface.
+</p>
 
-BlockLens only shows on-chain relationships. It does not claim ownership, clustering, or entity attribution.
+<p align="center">
+  <a href="https://blocklens.suwansankaja.com"><strong>🚀 Try it live →</strong></a>
+</p>
 
-## Stack
+---
 
-- Next.js 16 with App Router
-- TypeScript
-- Tailwind CSS 4
-- Next Route Handlers as a backend-for-frontend proxy
-- `vis-network` for graph rendering
-- No database required
+## ✨ Features
 
-## Features
+| Feature | Description |
+|---------|-------------|
+| 🔍 **Smart Search** | Paste any txid or Bitcoin address with auto-detection |
+| 🕸️ **Interactive Graph** | Zoom, pan, drag, select, and expand nodes visually |
+| 📊 **Transaction Details** | Inputs, outputs, outspends, and spending tx links |
+| 🏠 **Address Mode** | Summary stats, recent transactions, neighbor addresses |
+| 🔗 **Hop-by-Hop Expansion** | Controlled graph expansion up to 20 hops |
+| 📋 **Details Panel** | Copy actions, external explorer links, collapsible sections |
+| 🔗 **Shareable URLs** | Share any search via `/?q=<value>` |
+| ⚡ **Session Cache** | In-memory caching for instant repeated lookups |
+| 🔄 **API Fallback** | mempool.space → Blockstream Esplora automatic failover |
+| ⚠️ **Smart Warnings** | Rate-limit, truncation, and heuristic warnings in the UI |
 
-- Search for a txid or Bitcoin address with basic client-side format detection
-- Transaction mode with inputs, outputs, outspends, and spending transaction links
-- Address mode with summary stats, recent transactions, and neighboring addresses
-- Graph zoom, pan, drag, selection, and node expansion
-- Details panel with copy actions and external explorer links
-- Shareable search URLs via `/?q=<value>`
-- In-memory session caching for repeated lookups during a session
-- Public API fallback from mempool.space to Blockstream Esplora
-- Rate-limit, truncation, and heuristic warnings in the UI
+---
 
-## Project structure
+## 🛠️ Stack
 
-```text
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | Next.js 16 (App Router) |
+| **Language** | TypeScript |
+| **Styling** | Tailwind CSS 4 |
+| **Backend** | Next.js Route Handlers (BFF proxy) |
+| **Graph Engine** | `vis-network` |
+| **Deployment** | Cloudflare Workers (OpenNext) |
+
+---
+
+## 📁 Project Structure
+
+```
 app/
-  page.tsx
-  api/
-    search/route.ts
-    tx/[txid]/route.ts
-    address/[address]/route.ts
-    expand/route.ts
+├── page.tsx                       # Main page
+├── globals.css                    # Design system
+└── api/
+    ├── search/route.ts            # Unified search endpoint
+    ├── tx/[txid]/route.ts         # Transaction lookup
+    ├── address/[address]/route.ts # Address lookup
+    └── expand/route.ts            # Graph expansion
+
 components/
-  ExplorerApp.tsx
-  SearchBar.tsx
-  FiltersPanel.tsx
-  SummaryCards.tsx
-  GraphView.tsx
-  DetailsPanel.tsx
+├── ExplorerApp.tsx                # Root app shell & state
+├── SearchBar.tsx                  # Search input & detection
+├── FiltersPanel.tsx               # Graph filter controls
+├── SummaryCards.tsx               # Metric cards
+├── GraphView.tsx                  # vis-network graph
+└── DetailsPanel.tsx               # Node inspector
+
 lib/
-  blockchain/
-    http.ts
-    provider.ts
-    mempool.ts
-    esplora.ts
-  graph/
-    normalize.ts
-    buildGraph.ts
-    expandGraph.ts
-    viewGraph.ts
-  utils/
-    validateBitcoinInput.ts
-    format.ts
-types/
-  blockchain.ts
-  graph.ts
+├── blockchain/                    # API adapters & provider logic
+├── graph/                         # Graph construction & layouts
+└── utils/                         # Validation & formatting
+
+types/                             # TypeScript type definitions
 ```
 
-## Getting started
+---
 
-1. Install dependencies:
+## 🚀 Getting Started
 
-   ```bash
-   npm install
-   ```
+### Prerequisites
 
-2. Create local env config:
+- **Node.js** 20+
+- **npm** 9+
 
-   ```bash
-   cp .env.example .env.local
-   ```
-
-3. Start development:
-
-   ```bash
-   npm run dev
-   ```
-
-4. Open [http://localhost:3000](http://localhost:3000)
-
-## Environment variables
-
-See [.env.example](/Users/su1/Github/Personal/BlockLens/.env.example).
+### Installation
 
 ```bash
-BLOCKLENS_MEMPOOL_BASE_URL=https://mempool.space/api
-BLOCKLENS_ESPLORA_BASE_URL=https://blockstream.info/api
-BLOCKLENS_FETCH_TIMEOUT_MS=10000
-BLOCKLENS_FETCH_RETRIES=2
-BLOCKLENS_REVALIDATE_SECONDS=30
+# Clone the repo
+git clone https://github.com/SuwanSankaja/BlockLens.git
+cd BlockLens
+
+# Install dependencies
+npm install
+
+# Create local env config
+cp .env.example .env.local
+
+# Start development
+npm run dev
 ```
 
-Notes:
+Open [http://localhost:3000](http://localhost:3000) and you're in 🎉
 
-- Defaults point to Bitcoin mainnet public APIs.
-- To target a self-hosted backend later, swap `BLOCKLENS_MEMPOOL_BASE_URL` and/or `BLOCKLENS_ESPLORA_BASE_URL`.
-- The provider seam for that change is in [lib/blockchain/mempool.ts](/Users/su1/Github/Personal/BlockLens/lib/blockchain/mempool.ts) and [lib/blockchain/esplora.ts](/Users/su1/Github/Personal/BlockLens/lib/blockchain/esplora.ts).
+---
 
-## Provider layer
+## ⚙️ Environment Variables
 
-The app prefers mempool.space first and falls back to Blockstream Esplora when mempool fails or rate-limits.
+See [`.env.example`](.env.example) for the full list. Defaults point to Bitcoin mainnet public APIs — no external keys required.
 
-Key provider methods:
+---
 
-- `getTransaction(txid)`
-- `getTransactionOutspends(txid)`
-- `getAddress(address)`
-- `getAddressTransactions(address)`
-- `getSpendingTransaction(txid, vout)`
-- `searchEntity(input)`
+## 🌐 Provider Architecture
 
-The shared provider entry point is [lib/blockchain/provider.ts](/Users/su1/Github/Personal/BlockLens/lib/blockchain/provider.ts).
+```
+mempool.space ──→ primary
+                     │
+                     ▼ (on failure)
+Blockstream Esplora ──→ fallback
+```
 
-## Graph model
+Both providers are interchangeable. The provider seam is cleanly abstracted in `lib/blockchain/`.
 
-Normalized graph data is shaped as:
+---
 
-```ts
+## 🕸️ Graph Model
+
+```typescript
 nodes: { id, type, label, raw, metadata }
 edges: { id, from, to, type, value, metadata }
 ```
 
-Node types:
+| Node Types | Edge Types |
+|-----------|-----------|
+| `transaction` | `input` · `output` |
+| `address` | `spent_by` · `received_by` |
 
-- `transaction`
-- `address`
+| Parameter | Value |
+|-----------|-------|
+| Default depth | 1 hop |
+| Max expansion | 20 hops |
+| Max visible nodes | 200 |
 
-Edge types:
+> ⚠️ **Input-side** address links are labeled as **heuristic** (inferred from prevout data, not ownership proof).
 
-- `input`
-- `output`
-- `spent_by`
-- `received_by`
+---
 
-Important semantics:
+## ☁️ Deployment
 
-- Input-side address links are labeled as heuristic because they come from prevout script data, not ownership proof.
-- Output and outspend relationships are explicit on-chain links.
-- Expansion never runs recursively on its own.
-
-## Search and expansion behavior
-
-- Default graph depth: 1 hop
-- Maximum manual expansion depth: 20 hops
-- Maximum node count: 200
-- Duplicate nodes and edges are deduplicated before rendering
-- Already-expanded nodes are tracked so traversal does not loop back endlessly
-
-The expansion logic lives in [lib/graph/expandGraph.ts](/Users/su1/Github/Personal/BlockLens/lib/graph/expandGraph.ts).
-
-## Deployment
-
-This app is configured for Cloudflare Workers using OpenNext.
-
-Recommended production hostname:
-
-- `lens.suwansankaja.com`
-
-Other good options:
-
-- `blocklens.suwansankaja.com`
-- `btc.suwansankaja.com`
-- `explorer.suwansankaja.com`
-
-Recommended Cloudflare flow:
-
-1. Push the repo to GitHub
-2. In Cloudflare, go to `Workers & Pages`
-3. Create a new Worker from Git
-4. Select this repository
-5. Set the Worker name to `blocklens-explorer` so it matches [wrangler.jsonc](/Users/su1/Github/Personal/BlockLens/wrangler.jsonc)
-6. Use these build settings:
-   - Install command: `npm install`
-   - Build command: `npm run cf:build`
-   - Deploy command: `npx wrangler deploy`
-7. Set the production branch to `dev` if you want `dev` pushes to deploy to the live subdomain immediately
-8. Add the env vars from [.env.example](/Users/su1/Github/Personal/BlockLens/.env.example)
-9. Deploy
-10. In the Worker dashboard, add a Custom Domain such as `lens.suwansankaja.com`
-
-Because it uses:
-
-- no database
-- no auth
-- no paid APIs
-
-the operational footprint stays small.
-
-### Local Cloudflare preview
-
-To test the Worker build locally before deploying:
+Deployed on **Cloudflare Workers** via [OpenNext](https://opennext.js.org/).
 
 ```bash
-npm run preview
+npm run cf:build    # Build for Cloudflare
+npm run preview     # Local preview
+npm run deploy      # Deploy to production
 ```
 
-To generate Cloudflare environment typings:
+---
 
-```bash
-npm run cf-typegen
-```
+## ⚠️ Limitations
 
-### GitHub to Cloudflare auto-deploy
+| Limitation | Details |
+|-----------|---------|
+| 🚦 Rate limiting | Public APIs may throttle during high traffic |
+| 📄 History depth | Address history is bounded by public endpoint limits |
+| 🏷️ No clustering | No wallet clustering or entity attribution |
+| 🔍 Heuristic links | Input-side relationships are inferred, not proven |
+| 🌐 Mainnet only | Testnet/signet requires swapping base URLs |
 
-The simplest CI/CD setup is Cloudflare Workers Builds:
+---
 
-- Connect the GitHub repository once in Cloudflare
-- Choose `dev` as the production branch if that is your active deployment branch
-- Every push to `dev` triggers a new Cloudflare build and deployment automatically
-- If you later want `main` for production and `dev` for a staging subdomain, create a second Worker and point it at the same repo with `dev` as its production branch
+## 📚 References
 
-This repo already includes the files Cloudflare expects:
+- [mempool.space REST API](https://mempool.space/docs/api/rest)
+- [Blockstream Esplora API](https://github.com/Blockstream/esplora/blob/master/API.md)
 
-- [wrangler.jsonc](/Users/su1/Github/Personal/BlockLens/wrangler.jsonc)
-- [open-next.config.ts](/Users/su1/Github/Personal/BlockLens/open-next.config.ts)
+---
 
-### Notes for custom domains
-
-- The Worker name and the deployed Worker project should stay aligned with [wrangler.jsonc](/Users/su1/Github/Personal/BlockLens/wrangler.jsonc)
-- Custom domains are easiest to attach from the Cloudflare dashboard after the first successful deployment
-- Because `suwansankaja.com` is already on Cloudflare, adding `lens.suwansankaja.com` is typically a direct dashboard step with no extra nameserver work
-
-## Swapping in a self-hosted backend later
-
-The easiest upgrade path is to point the existing provider base URLs at your own Esplora-compatible infrastructure.
-
-Places designed for that swap:
-
-- [lib/blockchain/mempool.ts](/Users/su1/Github/Personal/BlockLens/lib/blockchain/mempool.ts)
-- [lib/blockchain/esplora.ts](/Users/su1/Github/Personal/BlockLens/lib/blockchain/esplora.ts)
-- [lib/blockchain/http.ts](/Users/su1/Github/Personal/BlockLens/lib/blockchain/http.ts)
-
-If you later add a database or clustering layer, the cleanest place to branch is behind the route handlers:
-
-- [app/api/search/route.ts](/Users/su1/Github/Personal/BlockLens/app/api/search/route.ts)
-- [app/api/expand/route.ts](/Users/su1/Github/Personal/BlockLens/app/api/expand/route.ts)
-
-That keeps third-party URLs hidden from the client and avoids reworking the frontend graph components.
-
-## Known limitations of public API approach
-
-- Public explorer APIs can rate-limit or temporarily fail, especially during traffic spikes.
-- Address transaction history from public endpoints is bounded and may require paging for deeper history. The initial address graph stays intentionally lightweight.
-- Graph completeness depends on what the public endpoint returns for the specific transaction or address.
-- This app does not do wallet clustering, entity attribution, or off-chain enrichment.
-- Input-side address relationships are heuristic and can be misleading if interpreted as ownership.
-- Default endpoints are mainnet-oriented. Testnet/signet support would require swapping the base URLs.
-- Very large hub addresses or fan-out transactions are intentionally truncated to protect UI performance and public API usage.
-
-## API references used
-
-- [mempool.space REST API docs](https://mempool.space/docs/api/rest)
-- [Blockstream Esplora API docs](https://github.com/Blockstream/esplora/blob/master/API.md)
+<p align="center">
+  <sub>Built with ❤️ by <a href="https://github.com/SuwanSankaja">Suwan Sankaja</a></sub>
+</p>
