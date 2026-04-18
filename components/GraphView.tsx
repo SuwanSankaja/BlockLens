@@ -39,7 +39,7 @@ function ControlButton({
       aria-label={label}
       title={label}
       onClick={onClick}
-      className="flex h-12 w-12 items-center justify-center rounded-full border border-sky-400/18 bg-slate-950/78 text-sky-100 shadow-[0_10px_24px_rgba(0,0,0,0.34)] backdrop-blur transition hover:border-sky-300/45 hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-400/25"
+      className="flex h-10 w-10 items-center justify-center rounded-xl border border-sky-400/12 bg-slate-950/70 text-sky-200/80 shadow-lg backdrop-blur-md transition hover:border-sky-300/30 hover:bg-slate-900/80 hover:text-sky-100 focus:outline-none focus:ring-2 focus:ring-sky-400/20 active:scale-95"
     >
       {children}
     </button>
@@ -84,15 +84,15 @@ function buildNodeStyle(
       margin: 12,
       color: {
         background: isFocusNode ? "#14365e" : "#0d1b32",
-        border: isSelected || isFocusNode ? "#8fd0ff" : "#5eb6ff",
+        border: isSelected || isFocusNode ? "#8fc8ff" : "#5eb6ff",
         highlight: {
           background: "#13274a",
-          border: "#8fd0ff",
+          border: "#8fc8ff",
         },
       },
       font: {
-        color: "#eff6ff",
-        face: "IBM Plex Sans",
+        color: "#f0f4ff",
+        face: "Inter, system-ui, sans-serif",
         size:
           shouldShowLabel
             ? isDenseFreeform && !isFocusNode && !isSelected
@@ -103,8 +103,8 @@ function buildNodeStyle(
       shadow: {
         enabled: true,
         color: isFocusNode
-          ? "rgba(94, 182, 255, 0.3)"
-          : "rgba(94, 182, 255, 0.16)",
+          ? "rgba(96, 168, 255, 0.28)"
+          : "rgba(96, 168, 255, 0.14)",
         x: 0,
         y: 0,
         size: isFocusNode ? 26 : 18,
@@ -131,7 +131,7 @@ function buildNodeStyle(
       border: node.metadata.synthetic
         ? "#f59e0b"
         : isSelected || isFocusNode
-          ? "#8fd0ff"
+          ? "#8fc8ff"
           : "#38bdf8",
       highlight: {
         background: node.metadata.synthetic ? "#4a2b0a" : "#123a58",
@@ -141,12 +141,12 @@ function buildNodeStyle(
     borderWidth: 2,
     font: {
       color: "#e0f2fe",
-      face: "IBM Plex Sans",
+      face: "Inter, system-ui, sans-serif",
       size: shouldShowLabel ? compactFontSize : 1,
     },
     shadow: {
       enabled: true,
-      color: "rgba(56, 189, 248, 0.12)",
+      color: "rgba(56, 189, 248, 0.1)",
       x: 0,
       y: 0,
       size: isFocusNode ? 22 : 16,
@@ -501,7 +501,7 @@ export default function GraphView({
         nodes: {
           shadow: {
             enabled: true,
-            color: "rgba(8, 14, 28, 0.45)",
+            color: "rgba(8, 14, 28, 0.4)",
             x: 0,
             y: 12,
             size: 24,
@@ -766,61 +766,72 @@ export default function GraphView({
     expandingNodeId === selectedNode?.id;
 
   return (
-    <section className="panel relative min-h-[520px] overflow-hidden rounded-[2rem] p-3 lg:min-h-[680px]">
-      <div className="absolute -left-10 top-0 h-32 w-32 rounded-full bg-sky-500/12 blur-3xl" />
-      <div className="absolute -right-10 bottom-0 h-36 w-36 rounded-full bg-blue-500/12 blur-3xl" />
+    <section className="panel relative flex flex-col overflow-hidden rounded-3xl p-2 slide-up">
+      {/* Subtle corner glows */}
+      <div className="pointer-events-none absolute -left-8 -top-8 h-28 w-28 rounded-full bg-sky-500/8 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-8 -right-8 h-28 w-28 rounded-full bg-violet-500/6 blur-3xl" />
+
       {!graph ? (
-        <div className="surface flex h-full min-h-[500px] items-center justify-center rounded-[1.6rem] border border-dashed border-sky-400/18 p-8 text-center">
-          <div className="max-w-md space-y-3">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
-              Empty graph
-            </p>
-            <h3 className="text-2xl font-semibold text-slate-50">
-              Search the chain to start exploring
-            </h3>
-            <p className="text-sm leading-6 text-slate-400">
-              BlockLens Explorer shows on-chain relationships only. It does not attempt
-              ownership or entity attribution.
-            </p>
+        <div className="surface flex flex-1 items-center justify-center rounded-2xl border border-dashed border-sky-400/10 p-8 text-center">
+          <div className="max-w-md space-y-4">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-sky-500/8">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-sky-400/40">
+                <circle cx="12" cy="12" r="10" />
+                <path d="m21 21-4.3-4.3" />
+                <circle cx="12" cy="12" r="4" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-slate-200">
+                Search to start exploring
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                BlockLens shows on-chain relationships only. No ownership or entity attribution.
+              </p>
+            </div>
           </div>
         </div>
       ) : graph.nodes.length === 0 ? (
-        <div className="surface flex h-full min-h-[500px] items-center justify-center rounded-[1.6rem] border border-dashed border-sky-400/18 p-8 text-center">
+        <div className="surface flex flex-1 items-center justify-center rounded-2xl border border-dashed border-sky-400/10 p-8 text-center">
           <div className="max-w-md space-y-3">
-            <h3 className="text-xl font-semibold text-slate-50">No nodes match the current filters</h3>
-            <p className="text-sm leading-6 text-slate-400">
-              Lower the minimum value filter or show already visited nodes to reveal more of
-              the graph.
+            <h3 className="text-lg font-semibold text-slate-200">No nodes match filters</h3>
+            <p className="text-sm leading-6 text-slate-500">
+              Lower the minimum value or show visited nodes to reveal more of the graph.
             </p>
           </div>
         </div>
       ) : (
-        <div className="space-y-3">
-          <div className="relative">
-            <div ref={containerRef} className="h-[520px] rounded-[1.6rem] lg:h-[680px]" />
-            <div className="pointer-events-none absolute inset-x-6 top-6 flex flex-wrap gap-2">
-              <span className="pointer-events-auto rounded-full border border-sky-400/16 bg-slate-950/70 px-3 py-1 text-xs font-medium text-slate-200 shadow-sm backdrop-blur">
+        <div className="flex flex-1 flex-col space-y-2">
+          <div className="relative flex-1">
+            <div ref={containerRef} className="absolute inset-0 rounded-2xl" />
+
+            {/* Floating HUD — top left */}
+            <div className="pointer-events-none absolute left-4 top-4 flex items-center gap-1.5">
+              <span className="pointer-events-auto inline-flex items-center gap-1.5 rounded-lg border border-sky-400/10 bg-slate-950/60 px-2.5 py-1 text-[11px] font-medium text-slate-300 shadow-sm backdrop-blur-md">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-sky-400" />
                 {graph.nodes.length} nodes
               </span>
-              <span className="pointer-events-auto rounded-full border border-sky-400/16 bg-slate-950/70 px-3 py-1 text-xs font-medium text-slate-200 shadow-sm backdrop-blur">
+              <span className="pointer-events-auto inline-flex items-center gap-1.5 rounded-lg border border-sky-400/10 bg-slate-950/60 px-2.5 py-1 text-[11px] font-medium text-slate-300 shadow-sm backdrop-blur-md">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-400" />
                 {graph.edges.length} edges
               </span>
               {graph.truncated ? (
-                <span className="pointer-events-auto rounded-full border border-amber-300/20 bg-amber-400/14 px-3 py-1 text-xs font-medium text-amber-100 shadow-sm backdrop-blur">
-                  Truncated at {graph.maxNodes} nodes
+                <span className="pointer-events-auto inline-flex items-center gap-1.5 rounded-lg border border-amber-400/15 bg-slate-950/60 px-2.5 py-1 text-[11px] font-medium text-amber-200 shadow-sm backdrop-blur-md">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400" />
+                  Truncated
                 </span>
               ) : null}
             </div>
 
             {focusLayout ? (
-              <div className="pointer-events-none absolute inset-x-6 top-20 hidden justify-between gap-4 lg:flex">
+              <div className="pointer-events-none absolute inset-x-4 top-12 hidden justify-between gap-4 lg:flex">
                 {focusLayout.laneBadges.map((badge) => (
                   <div
                     key={badge.id}
-                    className={`rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] backdrop-blur ${
+                    className={`rounded-lg border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] backdrop-blur-md ${
                       badge.side === "left"
-                        ? "border-amber-300/20 bg-amber-400/10 text-amber-100"
-                        : "border-sky-300/20 bg-sky-500/10 text-sky-100"
+                        ? "border-amber-400/15 bg-amber-500/8 text-amber-200"
+                        : "border-sky-400/15 bg-sky-500/8 text-sky-200"
                     }`}
                   >
                     {badge.label}
@@ -829,164 +840,90 @@ export default function GraphView({
               </div>
             ) : null}
 
-            <div className="pointer-events-none absolute bottom-6 left-6 right-6 flex items-end justify-between">
-              <div className="pointer-events-auto flex items-center gap-2">
-                <div className="grid grid-cols-3 gap-2">
+            {/* Controls — bottom */}
+            <div className="pointer-events-none absolute bottom-4 left-4 right-4 flex items-end justify-between">
+              {/* Pan controls */}
+              <div className="pointer-events-auto flex items-center gap-1.5 rounded-2xl border border-sky-400/8 bg-slate-950/50 p-1.5 backdrop-blur-xl">
+                <div className="grid grid-cols-3 gap-1">
                   <div />
                   <ControlButton label="Pan up" onClick={() => panView(0, -PAN_DISTANCE)}>
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M12 18V7M12 7L7 12M12 7L17 12"
-                        stroke="currentColor"
-                        strokeWidth="2.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 18V7M12 7L7 12M12 7L17 12" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </ControlButton>
                   <div />
                   <ControlButton label="Pan left" onClick={() => panView(-PAN_DISTANCE, 0)}>
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M18 12H7M7 12L12 7M7 12L12 17"
-                        stroke="currentColor"
-                        strokeWidth="2.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M18 12H7M7 12L12 7M7 12L12 17" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </ControlButton>
                   <ControlButton label="Pan down" onClick={() => panView(0, PAN_DISTANCE)}>
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M12 6V17M12 17L17 12M12 17L7 12"
-                        stroke="currentColor"
-                        strokeWidth="2.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 6V17M12 17L17 12M12 17L7 12" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </ControlButton>
                   <ControlButton label="Pan right" onClick={() => panView(PAN_DISTANCE, 0)}>
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M6 12H17M17 12L12 7M17 12L12 17"
-                        stroke="currentColor"
-                        strokeWidth="2.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M6 12H17M17 12L12 7M17 12L12 17" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </ControlButton>
                 </div>
               </div>
 
-              <div className="pointer-events-auto flex items-center gap-2">
+              {/* Zoom controls */}
+              <div className="pointer-events-auto flex items-center gap-1.5 rounded-2xl border border-sky-400/8 bg-slate-950/50 p-1.5 backdrop-blur-xl">
                 <ControlButton label="Fit graph" onClick={fitView}>
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M9 4H4V9M15 4H20V9M4 15V20H9M20 15V20H15"
-                      stroke="currentColor"
-                      strokeWidth="2.1"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 4H4V9M15 4H20V9M4 15V20H9M20 15V20H15" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </ControlButton>
                 <ControlButton label="Zoom out" onClick={() => zoomView(0.82)}>
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M8 10.5H13M15.5 15.5L20 20M16 10.5C16 13.5376 13.5376 16 10.5 16C7.46243 16 5 13.5376 5 10.5C5 7.46243 7.46243 5 10.5 5C13.5376 5 16 7.46243 16 10.5Z"
-                      stroke="currentColor"
-                      strokeWidth="2.1"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 10.5H13M15.5 15.5L20 20M16 10.5C16 13.5376 13.5376 16 10.5 16C7.46243 16 5 13.5376 5 10.5C5 7.46243 7.46243 5 10.5 5C13.5376 5 16 7.46243 16 10.5Z" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </ControlButton>
                 <ControlButton label="Zoom in" onClick={() => zoomView(1.22)}>
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10.5 8V13M8 10.5H13M15.5 15.5L20 20M16 10.5C16 13.5376 13.5376 16 10.5 16C7.46243 16 5 13.5376 5 10.5C5 7.46243 7.46243 5 10.5 5C13.5376 5 16 7.46243 16 10.5Z"
-                      stroke="currentColor"
-                      strokeWidth="2.1"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10.5 8V13M8 10.5H13M15.5 15.5L20 20M16 10.5C16 13.5376 13.5376 16 10.5 16C7.46243 16 5 13.5376 5 10.5C5 7.46243 7.46243 5 10.5 5C13.5376 5 16 7.46243 16 10.5Z" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </ControlButton>
               </div>
             </div>
           </div>
 
+          {/* Selected node info bar */}
           {selectedNode ? (
-            <div className="rounded-3xl border border-sky-400/14 bg-slate-950/78 p-4 shadow-lg backdrop-blur-xl">
-              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                    Selected node
+            <div className="glass rounded-2xl p-3.5">
+              <div className="flex flex-col gap-2.5 md:flex-row md:items-center md:justify-between">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-block h-2 w-2 rounded-full bg-sky-400" />
+                    <h3 className="truncate text-sm font-semibold text-slate-100">
+                      {selectedNode.label}
+                    </h3>
+                  </div>
+                  <p className="mt-0.5 pl-4 text-xs text-slate-500">
+                    {selectedNode.type} · depth {selectedDepth ?? 0}
+                    {focusLayout ? " · focused layout" : ""}
                   </p>
-                  <h3 className="mt-1 text-lg font-semibold text-slate-50">
-                    {selectedNode.label}
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-400">
-                    {selectedNode.type} node at depth {selectedDepth ?? 0}
-                  </p>
-                  {focusLayout ? (
-                    <p className="mt-1 text-xs uppercase tracking-[0.18em] text-sky-200/60">
-                      Focused neighborhood layout
-                    </p>
-                  ) : null}
                 </div>
                 <button
                   type="button"
                   disabled={expansionDisabled}
                   onClick={() => onExpandNode(selectedNode.id, selectedNode.type)}
-                  className="rounded-full bg-gradient-to-r from-sky-500 to-blue-600 px-4 py-2 text-sm font-medium text-white shadow-[0_10px_24px_rgba(37,99,235,0.24)] transition hover:from-sky-400 hover:to-blue-500 disabled:cursor-not-allowed disabled:from-slate-700 disabled:to-slate-700 disabled:text-slate-400 disabled:shadow-none"
+                  className="btn-glow rounded-full px-4 py-1.5 text-xs font-semibold"
                 >
-                  {expandingNodeId === selectedNode.id ? "Expanding..." : "Expand 1 hop"}
+                  {expandingNodeId === selectedNode.id ? (
+                    <span className="flex items-center gap-1.5">
+                      <svg className="h-3 w-3 animate-spin" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.25" />
+                        <path d="M12 2a10 10 0 019.5 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                      </svg>
+                      Expanding…
+                    </span>
+                  ) : (
+                    "Expand 1 hop"
+                  )}
                 </button>
               </div>
             </div>
