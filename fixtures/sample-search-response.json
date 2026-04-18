@@ -1,0 +1,121 @@
+{
+  "ok": true,
+  "summary": {
+    "kind": "transaction",
+    "provider": "mempool",
+    "query": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "warnings": [
+      {
+        "code": "sample_data",
+        "message": "This sample response is included for reference."
+      }
+    ],
+    "transactionBundle": {
+      "transaction": {
+        "txid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "version": 2,
+        "locktime": 0,
+        "size": 224,
+        "weight": 560,
+        "fee": 1240,
+        "status": {
+          "confirmed": true,
+          "block_height": 840000,
+          "block_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "block_time": 1713427200
+        },
+        "vin": [
+          {
+            "txid": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "vout": 0,
+            "prevout": {
+              "scriptpubkey": "0014feedfeedfeedfeedfeedfeedfeedfeedfeedfeed",
+              "scriptpubkey_type": "v0_p2wpkh",
+              "scriptpubkey_address": "bc1qsampleinput0000000000000000000000000ld3v",
+              "value": 120000
+            },
+            "is_coinbase": false,
+            "sequence": 4294967293
+          }
+        ],
+        "vout": [
+          {
+            "scriptpubkey": "0014deeddeeddeeddeeddeeddeeddeeddeeddeeddeed",
+            "scriptpubkey_type": "v0_p2wpkh",
+            "scriptpubkey_address": "bc1qsampleoutput000000000000000000000000z7l5",
+            "value": 60000
+          },
+          {
+            "scriptpubkey": "0014abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
+            "scriptpubkey_type": "v0_p2wpkh",
+            "scriptpubkey_address": "bc1qsamplechange0000000000000000000000000jmq",
+            "value": 58760
+          }
+        ]
+      },
+      "outspends": [
+        {
+          "spent": true,
+          "txid": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "vin": 0,
+          "status": {
+            "confirmed": true,
+            "block_height": 840005,
+            "block_time": 1713430900
+          }
+        },
+        {
+          "spent": false
+        }
+      ]
+    },
+    "graph": {
+      "nodes": [
+        {
+          "id": "tx:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "type": "transaction",
+          "label": "aaaaaaaa...aaaaaaaa",
+          "raw": null,
+          "metadata": {
+            "confirmed": true
+          }
+        },
+        {
+          "id": "address:bc1qsampleinput0000000000000000000000000ld3v",
+          "type": "address",
+          "label": "bc1qsamp...0000ld3v",
+          "raw": null,
+          "metadata": {}
+        }
+      ],
+      "edges": [
+        {
+          "id": "edge:sample-input",
+          "from": "address:bc1qsampleinput0000000000000000000000000ld3v",
+          "to": "tx:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "type": "input",
+          "value": 120000,
+          "metadata": {
+            "heuristic": true
+          }
+        }
+      ],
+      "traversal": {
+        "rootNodeId": "tx:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "expandedNodeIds": [],
+        "nodeDepthById": {
+          "tx:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": 0,
+          "address:bc1qsampleinput0000000000000000000000000ld3v": 1
+        }
+      },
+      "warnings": [
+        {
+          "code": "sample_data",
+          "message": "This graph is included as bundled sample data."
+        }
+      ],
+      "truncated": false,
+      "maxNodes": 200
+    }
+  }
+}

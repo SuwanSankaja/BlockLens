@@ -1,0 +1,167 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  --background: #06111f;
+  --background-deep: #040b16;
+  --surface: linear-gradient(180deg, rgba(15, 27, 48, 0.88), rgba(8, 18, 34, 0.88));
+  --surface-strong: rgba(12, 23, 43, 0.94);
+  --surface-muted: rgba(17, 31, 56, 0.9);
+  --border: rgba(125, 164, 255, 0.18);
+  --text: #eff6ff;
+  --text-muted: #91a4c8;
+  --brand: #5eb6ff;
+  --brand-soft: rgba(94, 182, 255, 0.14);
+  --brand-strong: #8fd0ff;
+  --warning: #f59e0b;
+  --danger: #fb7185;
+  --shadow:
+    0 28px 80px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.26), transparent 26%),
+    radial-gradient(circle at 85% 12%, rgba(34, 211, 238, 0.18), transparent 24%),
+    radial-gradient(circle at 50% 100%, rgba(30, 64, 175, 0.22), transparent 32%),
+    linear-gradient(180deg, var(--background) 0%, var(--background-deep) 100%);
+  color: var(--text);
+  font-family:
+    "IBM Plex Sans",
+    "Segoe UI",
+    sans-serif;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(circle at center, black, transparent 85%);
+  opacity: 0.35;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.surface {
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.surface-muted {
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+}
+
+::selection {
+  background: rgba(94, 182, 255, 0.32);
+  color: white;
+}
+
+::placeholder {
+  color: rgba(145, 164, 200, 0.78);
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin {
+  scrollbar-color: rgba(94, 182, 255, 0.4) transparent;
+}
+
+.vis-network {
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at top, rgba(59, 130, 246, 0.14), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(34, 211, 238, 0.1), transparent 28%),
+    linear-gradient(180deg, rgba(5, 12, 24, 0.96), rgba(9, 18, 36, 0.98));
+}
+
+div.vis-network div.vis-navigation div.vis-button {
+  background: rgba(8, 17, 32, 0.94) !important;
+  border: 1px solid rgba(125, 164, 255, 0.2) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35) !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: 20px 20px !important;
+  background-image: none !important;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    background-color 140ms ease,
+    transform 140ms ease;
+}
+
+div.vis-network div.vis-navigation div.vis-button:hover {
+  background-color: rgba(12, 28, 52, 0.98) !important;
+  border-color: rgba(143, 208, 255, 0.4) !important;
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(94, 182, 255, 0.2) !important;
+}
+
+div.vis-network div.vis-navigation div.vis-button:active {
+  transform: scale(0.96);
+}
+
+div.vis-network div.vis-navigation div.vis-button.vis-up {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238fd0ff' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 18V7'/%3E%3Cpath d='m7 12 5-5 5 5'/%3E%3C/svg%3E") !important;
+}
+
+div.vis-network div.vis-navigation div.vis-button.vis-down {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238fd0ff' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 6v11'/%3E%3Cpath d='m17 12-5 5-5-5'/%3E%3C/svg%3E") !important;
+}
+
+div.vis-network div.vis-navigation div.vis-button.vis-left {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238fd0ff' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 12H7'/%3E%3Cpath d='m12 7-5 5 5 5'/%3E%3C/svg%3E") !important;
+}
+
+div.vis-network div.vis-navigation div.vis-button.vis-right {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238fd0ff' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12h11'/%3E%3Cpath d='m12 17 5-5-5-5'/%3E%3C/svg%3E") !important;
+}
+
+div.vis-network div.vis-navigation div.vis-button.vis-zoomIn {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238fd0ff' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='10.5' cy='10.5' r='4.75'/%3E%3Cpath d='M10.5 8v5'/%3E%3Cpath d='M8 10.5h5'/%3E%3Cpath d='m15 15 4 4'/%3E%3C/svg%3E") !important;
+}
+
+div.vis-network div.vis-navigation div.vis-button.vis-zoomOut {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238fd0ff' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='10.5' cy='10.5' r='4.75'/%3E%3Cpath d='M8 10.5h5'/%3E%3Cpath d='m15 15 4 4'/%3E%3C/svg%3E") !important;
+}
+
+div.vis-network div.vis-navigation div.vis-button.vis-zoomExtends {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238fd0ff' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 4H4v5'/%3E%3Cpath d='M15 4h5v5'/%3E%3Cpath d='M4 15v5h5'/%3E%3Cpath d='M20 15v5h-5'/%3E%3C/svg%3E") !important;
+}
