@@ -1,5 +1,6 @@
 "use client";
 
+import { GENESIS_ADDRESS, GENESIS_TXID } from "@/lib/utils/presets";
 import type { BitcoinInputDetection } from "@/lib/utils/validateBitcoinInput";
 
 interface SearchBarProps {
@@ -13,11 +14,11 @@ interface SearchBarProps {
 const EXAMPLES = [
   {
     label: "Genesis tx",
-    value: "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b",
+    value: GENESIS_TXID,
   },
   {
     label: "Genesis address",
-    value: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+    value: GENESIS_ADDRESS,
   },
 ];
 
@@ -55,7 +56,7 @@ export default function SearchBar({
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
             placeholder="Paste a txid or address"
-            className="surface min-h-28 w-full rounded-2xl px-4 py-3 text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20"
+            className="search-input surface min-h-28 w-full rounded-2xl px-4 py-3 text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] outline-none transition"
           />
         </label>
 
