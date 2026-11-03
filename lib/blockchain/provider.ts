@@ -98,11 +98,17 @@ export function mergeProviderWarnings(...warningGroups: string[][]): string[] {
 export function toApiErrorShape(error: unknown): ApiErrorShape {
   const normalized = normalizeProviderError(error, "mempool");
 
+  // Upstream details (response bodies / raw error messages) stay server-side.
+  if (normalized.details) {
+    console.error(
+      `[blocklens] ${normalized.provider} ${normalized.code}: ${normalized.details}`,
+    );
+  }
+
   return {
     code: normalized.code,
     message: normalized.message,
     status: normalized.status,
     retryable: normalized.retryable,
-    details: normalized.details,
   };
 }

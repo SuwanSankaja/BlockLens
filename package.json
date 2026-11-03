@@ -10,11 +10,12 @@
     "deploy": "npm run cf:build && opennextjs-cloudflare deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "vitest run"
   },
   "dependencies": {
-    "@opennextjs/cloudflare": "^1.19.1",
-    "next": "16.2.4",
+    "@opennextjs/cloudflare": "^1.20.15",
+    "next": "^16.4.4",
     "react": "19.2.5",
     "react-dom": "19.2.5",
     "vis-network": "10.0.2"
@@ -25,9 +26,10 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "eslint": "^9.38.0",
-    "eslint-config-next": "16.2.4",
+    "eslint-config-next": "^16.4.4",
     "tailwindcss": "4.2.2",
     "typescript": "^5.9.3",
-    "wrangler": "^4.83.0"
+    "vitest": "^4.1.12",
+    "wrangler": "^4.157.0"
   }
 }

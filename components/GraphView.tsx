@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { DataSet, Network } from "vis-network/standalone";
 
+import ExpandButton from "@/components/ExpandButton";
+import { formatAggregatedEdgeLabel } from "@/lib/graph/aggregateEdges";
 import { buildCompactLayout } from "@/lib/graph/compactLayout";
 import { buildFocusLayout } from "@/lib/graph/focusLayout";
 import { buildOrbitLayout } from "@/lib/graph/orbitLayout";
@@ -39,7 +41,7 @@ function ControlButton({
       aria-label={label}
       title={label}
       onClick={onClick}
-      className="flex h-10 w-10 items-center justify-center rounded-xl border border-sky-400/12 bg-slate-950/70 text-sky-200/80 shadow-lg backdrop-blur-md transition hover:border-sky-300/30 hover:bg-slate-900/80 hover:text-sky-100 focus:outline-none focus:ring-2 focus:ring-sky-400/20 active:scale-95"
+      className="flex h-10 w-10 items-center justify-center rounded-xl border border-sky-400/12 bg-slate-950/70 text-sky-200/80 shadow-lg backdrop-blur-md transition hover:border-sky-300/30 hover:bg-slate-900/80 hover:text-sky-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 active:scale-95"
     >
       {children}
     </button>
@@ -192,9 +194,12 @@ function buildEdgeStyle(
     relativeDepthById[edge.from] ?? 0,
     relativeDepthById[edge.to] ?? 0,
   );
+  const aggregatedCount =
+    typeof edge.metadata.count === "number" ? edge.metadata.count : 1;
+  const aggregateLabel = formatAggregatedEdgeLabel(edge);
   const shouldShowLabel = isFocusedLayout
-    ? touchesFocus || touchesSelected
-    : !suppressFreeformLabels;
+    ? touchesFocus || touchesSelected || aggregatedCount > 1
+    : !suppressFreeformLabels || aggregatedCount > 1;
   const fromSide = placements?.[edge.from]?.side;
   const toSide = placements?.[edge.to]?.side;
   const sameLane =
@@ -212,7 +217,7 @@ function buildEdgeStyle(
         ? 2.9
         : 2.3;
   const commonProps = {
-    width: edgeWidth,
+    width: aggregatedCount > 1 ? Math.min(edgeWidth + Math.log2(aggregatedCount), 7) : edgeWidth,
     arrowStrikethrough: false,
     arrows: {
       to: {
@@ -240,7 +245,7 @@ function buildEdgeStyle(
       id: edge.id,
       from: edge.from,
       to: edge.to,
-      label: shouldShowLabel ? "spent by" : "",
+      label: shouldShowLabel ? (aggregatedCount > 1 ? aggregateLabel : "spent by") : "",
       dashes: [8, 6],
       color: {
         color: "#60a5fa",
@@ -260,7 +265,7 @@ function buildEdgeStyle(
       id: edge.id,
       from: edge.from,
       to: edge.to,
-      label: shouldShowLabel ? "input" : "",
+      label: shouldShowLabel ? (aggregatedCount > 1 ? aggregateLabel : "input") : "",
       color: {
         color: "#fb923c",
         highlight: "#fdba74",
@@ -280,7 +285,7 @@ function buildEdgeStyle(
       id: edge.id,
       from: edge.from,
       to: edge.to,
-      label: shouldShowLabel ? "received" : "",
+      label: shouldShowLabel ? (aggregatedCount > 1 ? aggregateLabel : "received") : "",
       color: {
         color: "#22d3ee",
         highlight: "#67e8f9",
@@ -299,9 +304,11 @@ function buildEdgeStyle(
     from: edge.from,
     to: edge.to,
     label: shouldShowLabel
-      ? edge.metadata.spent
-        ? "spent output"
-        : "unspent output"
+      ? aggregatedCount > 1
+        ? aggregateLabel
+        : edge.metadata.spent
+          ? "spent output"
+          : "unspent output"
       : "",
     color: {
       color: edge.metadata.spent ? "#f59e0b" : "#38bdf8",
@@ -333,6 +340,7 @@ export default function GraphView({
   const lastNodeCountRef = useRef(0);
   const rootNodeIdRef = useRef<string | null>(null);
   const semanticLayoutEnabledRef = useRef(false);
+  const fitTimersRef = useRef<number[]>([]);
 
   const selectedDepth = useMemo(() => {
     if (!graph || !selectedNodeId) {
@@ -533,7 +541,19 @@ export default function GraphView({
       }
     });
 
+    const fitTimers = fitTimersRef.current;
+    const container = containerRef.current;
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(() => {
+            networkRef.current?.fit({ animation: false });
+          })
+        : null;
+    resizeObserver?.observe(container);
+
     return () => {
+      resizeObserver?.disconnect();
+      fitTimers.forEach((timer) => window.clearTimeout(timer));
       networkRef.current?.destroy();
       networkRef.current = null;
     };
@@ -645,6 +665,9 @@ export default function GraphView({
           },
         });
         network.stopSimulation();
+        // Positions only settle after stabilization, so re-fit to guarantee
+        // every node is inside the viewport.
+        network.fit({ animation: { duration: 300, easingFunction: "easeInOutQuad" } });
       });
       network.stabilize(stabilizationIterations);
     } else {
@@ -700,6 +723,15 @@ export default function GraphView({
           easingFunction: "easeInOutQuad",
         },
       });
+    }
+
+    if (graphShapeChanged) {
+      // Fit again once the DataSet has been rendered (covers fixed layouts and
+      // container resizes that happened while the graph was being built).
+      const fitTimer = window.setTimeout(() => {
+        networkRef.current?.fit({ animation: false });
+      }, 60);
+      fitTimersRef.current.push(fitTimer);
     }
 
     lastNodeCountRef.current = graph.nodes.length;
@@ -758,15 +790,8 @@ export default function GraphView({
     isDenseSingleHopFreeform,
   ]);
 
-  const expansionDisabled =
-    !graph ||
-    !selectedNode ||
-    graph.traversal.expandedNodeIds.includes(selectedNode.id) ||
-    (selectedDepth !== null && selectedDepth >= maxDepth) ||
-    expandingNodeId === selectedNode?.id;
-
   return (
-    <section className="panel relative flex flex-col overflow-hidden rounded-3xl p-2 slide-up">
+    <section className="panel relative flex min-h-[460px] flex-col overflow-hidden rounded-3xl p-2 slide-up lg:min-h-0">
       {/* Subtle corner glows */}
       <div className="pointer-events-none absolute -left-8 -top-8 h-28 w-28 rounded-full bg-sky-500/8 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-8 -right-8 h-28 w-28 rounded-full bg-violet-500/6 blur-3xl" />
@@ -785,7 +810,7 @@ export default function GraphView({
               <h3 className="text-lg font-semibold text-slate-200">
                 Search to start exploring
               </h3>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
+              <p className="mt-2 text-sm leading-6 text-slate-400">
                 BlockLens shows on-chain relationships only. No ownership or entity attribution.
               </p>
             </div>
@@ -795,14 +820,14 @@ export default function GraphView({
         <div className="surface flex flex-1 items-center justify-center rounded-2xl border border-dashed border-sky-400/10 p-8 text-center">
           <div className="max-w-md space-y-3">
             <h3 className="text-lg font-semibold text-slate-200">No nodes match filters</h3>
-            <p className="text-sm leading-6 text-slate-500">
+            <p className="text-sm leading-6 text-slate-400">
               Lower the minimum value or show visited nodes to reveal more of the graph.
             </p>
           </div>
         </div>
       ) : (
         <div className="flex flex-1 flex-col space-y-2">
-          <div className="relative flex-1">
+          <div className="relative min-h-[380px] flex-1">
             <div ref={containerRef} className="absolute inset-0 rounded-2xl" />
 
             {/* Floating HUD — top left */}
@@ -902,29 +927,18 @@ export default function GraphView({
                       {selectedNode.label}
                     </h3>
                   </div>
-                  <p className="mt-0.5 pl-4 text-xs text-slate-500">
+                  <p className="mt-0.5 pl-4 text-xs text-slate-400">
                     {selectedNode.type} · depth {selectedDepth ?? 0}
                     {focusLayout ? " · focused layout" : ""}
                   </p>
                 </div>
-                <button
-                  type="button"
-                  disabled={expansionDisabled}
-                  onClick={() => onExpandNode(selectedNode.id, selectedNode.type)}
-                  className="btn-glow rounded-full px-4 py-1.5 text-xs font-semibold"
-                >
-                  {expandingNodeId === selectedNode.id ? (
-                    <span className="flex items-center gap-1.5">
-                      <svg className="h-3 w-3 animate-spin" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.25" />
-                        <path d="M12 2a10 10 0 019.5 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                      </svg>
-                      Expanding…
-                    </span>
-                  ) : (
-                    "Expand 1 hop"
-                  )}
-                </button>
+                <ExpandButton
+                  graph={graph}
+                  nodeId={selectedNode.id}
+                  maxDepth={maxDepth}
+                  expandingNodeId={expandingNodeId}
+                  onExpand={() => onExpandNode(selectedNode.id, selectedNode.type)}
+                />
               </div>
             </div>
           ) : null}

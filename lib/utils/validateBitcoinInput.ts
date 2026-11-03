@@ -2,7 +2,7 @@ import type { SearchEntityKind } from "@/types/blockchain";
 
 const TXID_REGEX = /^[a-fA-F0-9]{64}$/;
 const BECH32_REGEX = /^(bc1|tb1|bcrt1)[ac-hj-np-z02-9]{11,71}$/i;
-const BASE58_REGEX = /^[123mn2][a-km-zA-HJ-NP-Z1-9]{24,61}$/;
+const BASE58_REGEX = /^[13mn2][a-km-zA-HJ-NP-Z1-9]{24,61}$/;
 
 export interface BitcoinInputDetection {
   input: string;

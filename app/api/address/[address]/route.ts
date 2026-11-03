@@ -30,8 +30,8 @@ export async function GET(
     const context = blockchainProvider.createContext();
     const options = parseGraphBuildOptions(request.nextUrl.searchParams);
     const [addressResponse, transactionsResponse] = await Promise.all([
-      blockchainProvider.getAddress(address, context),
-      blockchainProvider.getAddressTransactions(address, context),
+      blockchainProvider.getAddress(detected.normalized, context),
+      blockchainProvider.getAddressTransactions(detected.normalized, context),
     ]);
     const bundle = {
       address: addressResponse.data,

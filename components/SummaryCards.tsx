@@ -56,41 +56,41 @@ const CARD_ACCENTS = [
 
 /* ── Animated counter ── */
 function AnimatedValue({ value }: { value: string }) {
-  const [displayed, setDisplayed] = useState(value);
+  // Only ever set from requestAnimationFrame callbacks; any other value is
+  // rendered directly, so non-numeric values never go stale.
+  const [animated, setAnimated] = useState<{ source: string; text: string } | null>(null);
   const prevRef = useRef(value);
 
   useEffect(() => {
     if (prevRef.current === value) return;
     prevRef.current = value;
 
-    // If it's a number, animate it counting up
     const numericMatch = value.match(/^([\d,]+)/);
-    if (numericMatch) {
-      const target = parseInt(numericMatch[1].replace(/,/g, ""), 10);
-      const suffix = value.slice(numericMatch[1].length);
-      const duration = 500;
-      const startTime = performance.now();
-      const startValue = 0;
+    if (!numericMatch) return;
 
-      function tick(now: number) {
-        const elapsed = now - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        // ease out cubic
-        const eased = 1 - Math.pow(1 - progress, 3);
-        const current = Math.round(startValue + (target - startValue) * eased);
-        setDisplayed(current.toLocaleString() + suffix);
-        if (progress < 1) {
-          requestAnimationFrame(tick);
-        }
+    const target = parseInt(numericMatch[1].replace(/,/g, ""), 10);
+    const suffix = value.slice(numericMatch[1].length);
+    const duration = 500;
+    const startTime = performance.now();
+    let frame = 0;
+
+    function tick(now: number) {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setAnimated({
+        source: value,
+        text: Math.round(target * eased).toLocaleString() + suffix,
+      });
+      if (progress < 1) {
+        frame = requestAnimationFrame(tick);
       }
-
-      requestAnimationFrame(tick);
-    } else {
-      setDisplayed(value);
     }
+
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
   }, [value]);
 
-  return <>{displayed}</>;
+  return <>{animated && animated.source === value ? animated.text : value}</>;
 }
 
 export default function SummaryCards({ items }: { items: SummaryCardItem[] }) {
@@ -107,14 +107,14 @@ export default function SummaryCards({ items }: { items: SummaryCardItem[] }) {
 
             <div className="flex items-center justify-between gap-2">
               <div className="min-w-0">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
                   {item.label}
                 </p>
                 <p className="mt-1 truncate text-lg font-bold tracking-tight text-slate-50">
                   <AnimatedValue value={item.value} />
                 </p>
                 {item.hint ? (
-                  <p className="truncate text-[11px] text-slate-500">{item.hint}</p>
+                  <p className="truncate text-[11px] text-slate-400">{item.hint}</p>
                 ) : null}
               </div>
               <div

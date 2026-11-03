@@ -324,16 +324,16 @@ export default function ExplorerApp({ initialQuery }: { initialQuery: string }) 
   }, [initialQuery, runSearch]);
 
   return (
-    <div className="relative h-screen overflow-hidden">
+    <div className="relative min-h-screen lg:h-screen lg:overflow-hidden">
       {/* Ambient orbs */}
       <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-sky-500/10 blur-[120px]" />
       <div className="pointer-events-none absolute -right-32 top-16 h-80 w-80 rounded-full bg-violet-500/8 blur-[100px]" />
       <div className="pointer-events-none absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-blue-600/8 blur-[100px]" />
 
-      <div className="flex h-full flex-col">
+      <div className="flex min-h-screen flex-col lg:h-full lg:min-h-0">
         {/* ── Glassmorphic Header ── */}
         <header className="glass z-50 flex-shrink-0 border-b border-white/[0.04]">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-2 sm:px-6">
+          <div className="mx-auto flex max-w-[1600px] items-center justify-between px-5 py-2 sm:px-6">
             <div className="flex items-center gap-3">
               <BlockLensLogo />
               <h1 className="gradient-text text-xl font-bold tracking-tight sm:text-2xl">
@@ -346,11 +346,15 @@ export default function ExplorerApp({ initialQuery }: { initialQuery: string }) 
               {isLoading ? <StatusChip variant="loading">Fetching data</StatusChip> : null}
               {searchError ? (
                 <StatusChip variant="error">
-                  {searchError.code === "invalid_input" ? "Invalid input" : searchError.message}
+                  <span className="whitespace-normal break-words">
+                    {searchError.code === "invalid_input" ? "Invalid input" : searchError.message}
+                  </span>
                 </StatusChip>
               ) : null}
               {warnings.length > 0 && !isLoading && !searchError ? (
-                <StatusChip variant="warning">{warnings[0].message.length > 60 ? warnings[0].message.slice(0, 57) + "…" : warnings[0].message}</StatusChip>
+                <StatusChip variant="warning">
+                  {warnings.length === 1 ? "1 notice" : `${warnings.length} notices`}
+                </StatusChip>
               ) : null}
               {summary ? (
                 <StatusChip variant="info">
@@ -361,14 +365,33 @@ export default function ExplorerApp({ initialQuery }: { initialQuery: string }) 
           </div>
         </header>
 
+        {warnings.length > 0 && !searchError ? (
+          <div
+            role="status"
+            className="flex-shrink-0 border-b border-amber-400/15 bg-amber-500/[0.07]"
+          >
+            <ul className="mx-auto max-w-[1600px] space-y-1 px-5 py-2 text-xs leading-5 text-amber-100 sm:px-6 lg:px-8">
+              {warnings.map((warning) => (
+                <li
+                  key={`${warning.code}:${warning.message}`}
+                  className="flex gap-2 break-words"
+                >
+                  <span aria-hidden="true" className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-amber-400" />
+                  <span className="min-w-0 whitespace-normal break-words">{warning.message}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
         {/* ── Main Content (fills remaining viewport) ── */}
-        <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-2 overflow-hidden px-4 py-2 sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-2 px-4 lg:overflow-hidden py-2 sm:px-6 lg:px-8">
           <div className="flex-shrink-0">
             <SummaryCards items={summaryCards} />
           </div>
 
           {isLoading && !summary ? (
-            <section className="grid min-h-0 flex-1 gap-2 lg:grid-cols-[340px_minmax(0,1fr)_360px]">
+            <section className="grid min-h-0 flex-1 gap-2 lg:grid-cols-[320px_minmax(0,1fr)_340px] xl:grid-cols-[340px_minmax(0,1fr)_360px]">
               {Array.from({ length: 3 }).map((_, index) => (
                 <div
                   key={`skeleton:${index}`}
@@ -381,8 +404,8 @@ export default function ExplorerApp({ initialQuery }: { initialQuery: string }) 
               ))}
             </section>
           ) : (
-            <section className="grid min-h-0 flex-1 gap-2 lg:grid-cols-[340px_minmax(0,1fr)_360px]">
-              <div className="scrollbar-thin min-h-0 space-y-2 overflow-y-auto">
+            <section className="grid min-h-0 flex-1 gap-2 lg:grid-cols-[320px_minmax(0,1fr)_340px] xl:grid-cols-[340px_minmax(0,1fr)_360px]">
+              <div className="scrollbar-thin min-h-0 space-y-3 lg:overflow-y-auto">
                 <div className="search-panel panel relative overflow-hidden rounded-3xl p-4">
                   <SearchBar
                     query={query}

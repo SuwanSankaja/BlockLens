@@ -2,19 +2,36 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { toApiErrorShape } from "@/lib/blockchain/provider";
 import { expandGraphOneHop } from "@/lib/graph/expandGraph";
-import type { ExpandGraphRequest } from "@/types/graph";
+import { validateExpandRequest } from "@/lib/graph/validateExpand";
+
+const MAX_BODY_BYTES = 2 * 1024 * 1024;
 
 export async function POST(request: NextRequest) {
   try {
-    const body = (await request.json()) as ExpandGraphRequest;
+    const declaredLength = Number(request.headers.get("content-length") ?? 0);
+    let rawBody: unknown = null;
 
-    if (!body?.targetNodeId || !body?.targetNodeType || !body?.graph) {
+    if (!(declaredLength > MAX_BODY_BYTES)) {
+      const text = await request.text();
+
+      if (text.length <= MAX_BODY_BYTES) {
+        try {
+          rawBody = JSON.parse(text);
+        } catch {
+          rawBody = null;
+        }
+      }
+    }
+
+    const validation = validateExpandRequest(rawBody);
+
+    if (!validation.ok) {
       return NextResponse.json(
         {
           ok: false,
           error: {
             code: "invalid_request",
-            message: "Expand request is missing required fields.",
+            message: validation.message,
             status: 400,
           },
         },
@@ -24,6 +41,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const body = validation.request;
     const response = await expandGraphOneHop(body);
 
     return NextResponse.json(response, {
