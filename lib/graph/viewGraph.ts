@@ -1,6 +1,8 @@
 import type { SummaryCardItem } from "@/types/graph";
 import type { GraphBuildOptions, GraphData, SearchSummary } from "@/types/graph";
 import { formatBtc, formatFeeRate, formatSats, shortenHash } from "@/lib/utils/format";
+import { aggregateParallelEdges, pruneDanglingEdges } from "@/lib/graph/aggregateEdges";
+import { computeAddressStats } from "@/lib/graph/addressStats";
 
 function passesValueFilter(
   value: number | undefined,
@@ -79,10 +81,9 @@ export function applyGraphFilters(
 
     return true;
   });
-  const nodeIds = new Set(nodes.map((node) => node.id));
-  const edges = filteredEdges.filter(
-    (edge) => nodeIds.has(edge.from) && nodeIds.has(edge.to),
-  );
+  // Only edges between visible nodes survive; parallel edges are merged so the
+  // edge count equals the number of lines actually drawn.
+  const edges = aggregateParallelEdges(pruneDanglingEdges(nodes, filteredEdges));
 
   return {
     ...graph,
@@ -136,15 +137,30 @@ export function buildSummaryCards(
 
   if (summary.kind === "address" && summary.addressBundle) {
     const address = summary.addressBundle.address;
+    const stats = computeAddressStats(address);
+    const count = (value: number | null) =>
+      value === null ? "unknown" : value.toLocaleString("en-US");
 
     return [
       {
         label: "Address",
         value: shortenHash(address.address, 6),
-        hint: `${address.chain_stats.tx_count} chain txs`,
+        hint: `${count(stats.chainTxCount)} confirmed txs${
+          stats.mempoolTxCount ? ` + ${count(stats.mempoolTxCount)} pending` : ""
+        }`,
       },
-      { label: "Funded", value: formatBtc(address.chain_stats.funded_txo_sum) },
-      { label: "Spent", value: formatBtc(address.chain_stats.spent_txo_sum) },
+      {
+        label: "Funded",
+        value: stats.fundedSats === null ? "Unknown" : formatBtc(stats.fundedSats),
+        hint: `${count(stats.fundedTxoCount)} outputs received`,
+      },
+      {
+        label: "Spent",
+        value: stats.spentSats === null ? "Unknown" : formatBtc(stats.spentSats),
+        hint: stats.neverSpent
+          ? "Never spent from"
+          : `${count(stats.spentTxoCount)} of ${count(stats.fundedTxoCount)} outputs`,
+      },
       baseCards[0],
     ];
   }

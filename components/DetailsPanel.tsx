@@ -2,6 +2,9 @@
 
 import { useMemo, useState } from "react";
 
+import ExpandButton from "@/components/ExpandButton";
+import { aggregateParallelEdges } from "@/lib/graph/aggregateEdges";
+import { computeAddressStats } from "@/lib/graph/addressStats";
 import { formatBtc, formatDateTime, formatFeeRate, formatSats } from "@/lib/utils/format";
 import type {
   BlockchainAddress,
@@ -125,7 +128,7 @@ function CollapsibleSection({
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className={`collapsible-chevron text-slate-500 ${isOpen ? "rotated" : ""}`}
+          className={`collapsible-chevron text-slate-400 ${isOpen ? "rotated" : ""}`}
         >
           <path d="m6 9 6 6 6-6" />
         </svg>
@@ -156,7 +159,7 @@ export default function DetailsPanel({
 
     const nodeMap = new Map(graph.nodes.map((node) => [node.id, node]));
 
-    return graph.edges
+    return aggregateParallelEdges(graph.edges)
       .filter((edge) => edge.from === selectedNode.id || edge.to === selectedNode.id)
       .map((edge) => {
         const otherId = edge.from === selectedNode.id ? edge.to : edge.from;
@@ -186,7 +189,7 @@ export default function DetailsPanel({
           <p className="mt-4 text-sm font-semibold text-slate-200">
             Select a node to inspect
           </p>
-          <p className="mt-2 max-w-[240px] text-xs leading-5 text-slate-500">
+          <p className="mt-2 max-w-[240px] text-xs leading-5 text-slate-400">
             Click a node in the graph to see details, raw data, and connected activity.
           </p>
         </div>
@@ -203,6 +206,7 @@ export default function DetailsPanel({
     selectedNode.type === "address"
       ? (selectedNode.raw as BlockchainAddress | null)
       : null;
+  const addressStats = computeAddressStats(rawAddress);
   const headlineValue =
     typeof selectedNode.metadata.txid === "string"
       ? selectedNode.metadata.txid
@@ -215,7 +219,7 @@ export default function DetailsPanel({
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
             Details
           </p>
           <h2 className="mt-1.5 text-xl font-bold tracking-tight text-slate-50">
@@ -251,7 +255,7 @@ export default function DetailsPanel({
       {/* Headline value */}
       <div className="surface-muted mt-5 rounded-2xl p-3.5">
         <p className="break-all text-sm font-medium leading-relaxed text-slate-200">{headlineValue}</p>
-        <p className="mt-1.5 text-[11px] leading-4 text-slate-500">
+        <p className="mt-1.5 text-[11px] leading-4 text-slate-400">
           On-chain links only. Input-side address relationships are heuristic.
         </p>
       </div>
@@ -262,7 +266,7 @@ export default function DetailsPanel({
             <CollapsibleSection title="Transaction summary" accentColor="sky">
               <div className="grid gap-2 sm:grid-cols-2">
                 <div className="surface-muted rounded-2xl p-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">Status</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Status</p>
                   <p className="mt-1.5 text-sm font-semibold text-slate-100">
                     {rawTransaction.status.confirmed ? (
                       <span className="flex items-center gap-1.5">
@@ -276,16 +280,16 @@ export default function DetailsPanel({
                       </span>
                     )}
                   </p>
-                  <p className="mt-0.5 text-[11px] text-slate-500">
+                  <p className="mt-0.5 text-[11px] text-slate-400">
                     {formatDateTime(rawTransaction.status.block_time)}
                   </p>
                 </div>
                 <div className="surface-muted rounded-2xl p-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">Fee</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Fee</p>
                   <p className="mt-1.5 text-sm font-semibold text-slate-100">
                     {formatSats(rawTransaction.fee)}
                   </p>
-                  <p className="mt-0.5 text-[11px] text-slate-500">
+                  <p className="mt-0.5 text-[11px] text-slate-400">
                     {formatFeeRate(rawTransaction.fee, rawTransaction.weight)}
                   </p>
                 </div>
@@ -306,7 +310,7 @@ export default function DetailsPanel({
                       <p className="truncate text-sm font-medium text-slate-200">
                         {vin.prevout?.scriptpubkey_address ?? "Coinbase / script"}
                       </p>
-                      <p className="mt-0.5 text-[11px] text-slate-500">
+                      <p className="mt-0.5 text-[11px] text-slate-400">
                         {formatBtc(vin.prevout?.value)} • heuristic
                       </p>
                     </div>
@@ -329,7 +333,7 @@ export default function DetailsPanel({
                       <p className="truncate text-sm font-medium text-slate-200">
                         {vout.scriptpubkey_address ?? `Script output ${index}`}
                       </p>
-                      <p className="mt-0.5 text-[11px] text-slate-500">
+                      <p className="mt-0.5 text-[11px] text-slate-400">
                         {formatBtc(vout.value)} • {vout.scriptpubkey_type ?? "script"}
                       </p>
                     </div>
@@ -343,7 +347,7 @@ export default function DetailsPanel({
         {selectedNode.type === "transaction" && !rawTransaction ? (
           <div className="surface-muted rounded-2xl p-3.5">
             <h3 className="text-sm font-semibold text-slate-200">Partial transaction</h3>
-            <p className="mt-1.5 text-xs leading-5 text-slate-500">
+            <p className="mt-1.5 text-xs leading-5 text-slate-400">
               Added as a neighbor. Expand to fetch full inputs, outputs, and outspends.
             </p>
           </div>
@@ -353,21 +357,24 @@ export default function DetailsPanel({
           <CollapsibleSection title="Address summary" accentColor="violet">
             <div className="grid gap-2 sm:grid-cols-2">
               <div className="surface-muted rounded-2xl p-3">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">Funded</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Funded</p>
                 <p className="mt-1.5 text-sm font-semibold text-slate-100">
-                  {formatBtc(rawAddress.chain_stats.funded_txo_sum)}
+                  {addressStats.fundedSats === null ? "Unknown" : formatBtc(addressStats.fundedSats)}
                 </p>
-                <p className="mt-0.5 text-[11px] text-slate-500">
-                  {rawAddress.chain_stats.funded_txo_count} outputs
+                <p className="mt-0.5 text-[11px] text-slate-400">
+                  {addressStats.fundedTxoCount ?? "Unknown"} outputs received
                 </p>
               </div>
               <div className="surface-muted rounded-2xl p-3">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">Spent</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Spent</p>
                 <p className="mt-1.5 text-sm font-semibold text-slate-100">
-                  {formatBtc(rawAddress.chain_stats.spent_txo_sum)}
+                  {addressStats.spentSats === null ? "Unknown" : formatBtc(addressStats.spentSats)}
                 </p>
-                <p className="mt-0.5 text-[11px] text-slate-500">
-                  {rawAddress.chain_stats.tx_count} chain txs
+                <p className="mt-0.5 text-[11px] text-slate-400">
+                  {addressStats.neverSpent
+                    ? "Never spent from"
+                    : `${addressStats.spentTxoCount ?? "Unknown"} outputs spent`}{" "}
+                  · {addressStats.txCount?.toLocaleString("en-US") ?? "Unknown"} txs
                 </p>
               </div>
             </div>
@@ -377,7 +384,7 @@ export default function DetailsPanel({
         {selectedNode.type === "address" && !rawAddress ? (
           <div className="surface-muted rounded-2xl p-3.5">
             <h3 className="text-sm font-semibold text-slate-200">Neighboring address</h3>
-            <p className="mt-1.5 text-xs leading-5 text-slate-500">
+            <p className="mt-1.5 text-xs leading-5 text-slate-400">
               From a transaction neighborhood. May be a standard address or synthetic script placeholder.
             </p>
           </div>
@@ -386,32 +393,17 @@ export default function DetailsPanel({
         {/* Connected nodes */}
         <CollapsibleSection title={`Connected nodes (${relatedNodes.length})`} accentColor="sky">
           <div className="mb-3 flex items-center justify-end">
-            <button
-              type="button"
-              disabled={
-                expandingNodeId === selectedNode.id ||
-                graph?.traversal.expandedNodeIds.includes(selectedNode.id) ||
-                (graph?.traversal.nodeDepthById[selectedNode.id] ?? 0) >= maxDepth
-              }
-              onClick={() => onExpandNode(selectedNode.id, selectedNode.type)}
-              className="btn-glow rounded-full px-3.5 py-1.5 text-xs font-semibold"
-            >
-              {expandingNodeId === selectedNode.id ? (
-                <span className="flex items-center gap-1.5">
-                  <svg className="h-3 w-3 animate-spin" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.25" />
-                    <path d="M12 2a10 10 0 019.5 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                  </svg>
-                  Expanding…
-                </span>
-              ) : (
-                "Expand 1 hop"
-              )}
-            </button>
+            <ExpandButton
+              graph={graph}
+              nodeId={selectedNode.id}
+              maxDepth={maxDepth}
+              expandingNodeId={expandingNodeId}
+              onExpand={() => onExpandNode(selectedNode.id, selectedNode.type)}
+            />
           </div>
           <div className="space-y-1.5">
             {relatedNodes.length === 0 ? (
-              <p className="py-3 text-center text-xs text-slate-500">No adjacent nodes visible.</p>
+              <p className="py-3 text-center text-xs text-slate-400">No adjacent nodes visible.</p>
             ) : (
               relatedNodes.map(({ edge, node }) => (
                 <button
@@ -424,15 +416,19 @@ export default function DetailsPanel({
                     <span className="block truncate text-sm font-medium text-slate-200 group-hover:text-sky-200 transition-colors">
                       {node.label}
                     </span>
-                    <span className="mt-0.5 block text-[11px] text-slate-500">
-                      {edge.type} {typeof edge.value === "number" ? `• ${formatBtc(edge.value)}` : ""}
+                    <span className="mt-0.5 block text-[11px] text-slate-400">
+                      {edge.type}
+                      {typeof edge.metadata.count === "number" && edge.metadata.count > 1
+                        ? ` × ${edge.metadata.count}`
+                        : ""}
+                      {typeof edge.value === "number" ? ` • ${formatBtc(edge.value)}` : ""}
                     </span>
                   </span>
                   <span className="flex items-center gap-2">
                     <span className="rounded-full border border-sky-400/10 bg-sky-500/6 px-2 py-0.5 text-[10px] font-medium text-sky-300">
                       {node.type}
                     </span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-600 transition-colors group-hover:text-sky-400">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400 transition-colors group-hover:text-sky-400">
                       <path d="m9 18 6-6-6-6" />
                     </svg>
                   </span>

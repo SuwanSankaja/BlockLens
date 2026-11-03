@@ -94,7 +94,7 @@ export default function SearchBar({
               ? "Awaiting valid input"
               : `Likely ${detection.kind}`}
           </span>
-          <span className="text-slate-500">
+          <span className="text-slate-400">
             {detection.reason ??
               "Basic format validation only."}
           </span>

@@ -30,8 +30,8 @@ export async function GET(
     const context = blockchainProvider.createContext();
     const options = parseGraphBuildOptions(request.nextUrl.searchParams);
     const [transactionResponse, outspendsResponse] = await Promise.all([
-      blockchainProvider.getTransaction(txid, context),
-      blockchainProvider.getTransactionOutspends(txid, context),
+      blockchainProvider.getTransaction(detected.normalized, context),
+      blockchainProvider.getTransactionOutspends(detected.normalized, context),
     ]);
     const bundle = {
       transaction: transactionResponse.data,
